@@ -34,6 +34,6 @@ public class Transaction {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "medicine_id", nullable = false)
+    @JoinColumn(name = "medicine_id")
     private Medicine medicine;
 }
