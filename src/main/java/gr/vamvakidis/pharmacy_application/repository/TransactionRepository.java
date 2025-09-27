@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface TransactionRepository extends JpaRepository<Transaction,Long> {
+public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
     /**
      * Retrieves all "OUT" type transactions for a specific medicine
@@ -24,6 +24,6 @@ public interface TransactionRepository extends JpaRepository<Transaction,Long> {
             "AND t.type = 'OUT' " +
             "AND t.date BETWEEN :startingDate AND :endingDate")
     List<Transaction> getTransactionsOut(@Param("medicineId") Long medicineId,
-                                         @Param("startingDate")LocalDateTime startingDate,
+                                         @Param("startingDate") LocalDateTime startingDate,
                                          @Param("endingDate") LocalDateTime endingDate);
 }
