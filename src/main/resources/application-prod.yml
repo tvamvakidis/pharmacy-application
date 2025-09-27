@@ -1,0 +1,10 @@
+# Database properties
+POSTGRESQL_HOST: localhost
+POSTGRESQL_PORT: 5432
+POSTGRES_DB: pharmacy_application
+POSTGRES_USER: postgres
+POSTGRES_PASSWORD: postgres
+
+# Server config
+CONTAINER_PORT: 8084
+ACTIVE_PROFILE: prod

@@ -1,0 +1,35 @@
+# Web server config
+server:
+  port: ${CONTAINER_PORT:8084}
+
+spring:
+  sql:
+    init:
+      mode: always # Always run SQL initialization scripts on startup (data.sql & schema.sql)
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+
+  application:
+    name: Pharmacy Application # Name of the application
+
+  #Database config
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${POSTGRESQL_HOST}:${POSTGRESQL_PORT}/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+  #JPA config
+  jpa:
+    hibernate:
+      ddl-auto: none # Doesnt create tables, instead uses schema.sql to do this
+    properties:
+      hibernate:
+        default_schema: pharmacy
+        format_sql: true # Makes SQL output readable in logs
+    defer-datasource-initialization: true # Waits for DB to be ready before initialization
+    show-sql: true # Prints SQL statements to console
+
+  #Spring profile config
+  profiles:
+    active: ${ACTIVE_PROFILE:dev}
