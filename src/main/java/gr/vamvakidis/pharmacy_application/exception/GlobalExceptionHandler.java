@@ -31,4 +31,30 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+
+
+    /**
+     * Handles NotEnoughStockException specifically.
+     * Returns an HTTP 400 (Bad Request) response with the exception message.
+     *
+     * @param ex The NotEnoughStockException that was thrown
+     * @return ResponseEntity with status 400 and the exception message
+     */
+    @ExceptionHandler(NotEnoughStockException.class)
+    public ResponseEntity<String> handleNotEnoughStockException(NotEnoughStockException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+
+    /**
+     * Handles DuplicateKeyException specifically.
+     * Returns an HTTP 400 (Bad Request) response with the exception message.
+     *
+     * @param ex The DuplicateKeyException that was thrown
+     * @return ResponseEntity with status 400 and the exception message
+     */
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<String> handleDuplicateKeyException(DuplicateKeyException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
 }
