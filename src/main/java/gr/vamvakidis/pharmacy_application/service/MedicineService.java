@@ -2,8 +2,10 @@ package gr.vamvakidis.pharmacy_application.service;
 
 import gr.vamvakidis.pharmacy_application.entity.Category;
 import gr.vamvakidis.pharmacy_application.entity.Medicine;
+import gr.vamvakidis.pharmacy_application.exception.DuplicateKeyException;
 import gr.vamvakidis.pharmacy_application.exception.ResourceNotFoundException;
 import gr.vamvakidis.pharmacy_application.repository.MedicineRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,7 +55,11 @@ public class MedicineService {
         Category category = categoryService.getCategoryById(medicine.getCategory().getId());
         medicine.setCategory(category);
 
-        return medicineRepository.save(medicine);
+        try {
+            return medicineRepository.save(medicine);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateKeyException("medicine's code", medicine.getCode());
+        }
     }
 
 
@@ -79,7 +85,11 @@ public class MedicineService {
             medicine.setCategory(category);
         }
 
-        return medicineRepository.save(medicine);
+        try {
+            return medicineRepository.save(medicine);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateKeyException("medicine's code", medicine.getCode());
+        }
     }
 
 
