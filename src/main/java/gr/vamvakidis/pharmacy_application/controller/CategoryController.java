@@ -84,8 +84,8 @@ public class CategoryController {
      * @return ResponseEntity with HTTP status 200 OK and no body
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Category> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         categoryService.deleteCategory(id);
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        return ResponseEntity.noContent().build();
     }
 }

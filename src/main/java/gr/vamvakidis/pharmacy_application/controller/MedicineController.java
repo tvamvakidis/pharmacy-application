@@ -6,6 +6,8 @@ import gr.vamvakidis.pharmacy_application.entity.Medicine;
 import gr.vamvakidis.pharmacy_application.mapper.MedicineMapper;
 import gr.vamvakidis.pharmacy_application.service.CategoryService;
 import gr.vamvakidis.pharmacy_application.service.MedicineService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,8 +32,9 @@ public class MedicineController {
      * @return List of MedicineDto representing all medicines
      */
     @GetMapping
-    public List<MedicineDto> getAll() {
-        return medicineService.getAllMedicines().stream().map(MedicineMapper::toDto).collect(Collectors.toList());
+    public ResponseEntity<List<MedicineDto>> getAll() {
+        List<MedicineDto> medicines = medicineService.getAllMedicines().stream().map(MedicineMapper::toDto).collect(Collectors.toList());
+        return ResponseEntity.status(HttpStatus.OK).body(medicines);
     }
 
 
@@ -42,8 +45,9 @@ public class MedicineController {
      * @return MedicineDto representing the requested medicine
      */
     @GetMapping("/{id}")
-    public MedicineDto getById(@PathVariable Long id) {
-        return MedicineMapper.toDto(medicineService.getMedicineById(id));
+    public ResponseEntity<MedicineDto> getById(@PathVariable Long id) {
+        MedicineDto medicineDto = MedicineMapper.toDto(medicineService.getMedicineById(id));
+        return ResponseEntity.status(HttpStatus.OK).body(medicineDto);
     }
 
 
@@ -54,25 +58,27 @@ public class MedicineController {
      * @return MedicineDto representing the created medicine
      */
     @PostMapping
-    public MedicineDto create(@RequestBody MedicineDto dto) {
+    public ResponseEntity<MedicineDto> create(@RequestBody MedicineDto dto) {
         Category category = categoryService.getCategoryById(dto.categoryId());
         Medicine medicine = MedicineMapper.toEntity(dto, category);
-        return MedicineMapper.toDto(medicineService.createMedicine(medicine));
+        Medicine createdMedicine = medicineService.createMedicine(medicine);
+        return ResponseEntity.status(HttpStatus.CREATED).body(MedicineMapper.toDto(createdMedicine));
     }
 
 
     /**
      * Updates an existing medicine by its ID.
      *
-     * @param id The ID of the medicine to update
+     * @param id  The ID of the medicine to update
      * @param dto The MedicineDto containing updated data
      * @return MedicineDto representing the updated medicine
      */
     @PutMapping("/{id}")
-    public MedicineDto update(@PathVariable Long id, @RequestBody MedicineDto dto) {
+    public ResponseEntity<MedicineDto> update(@PathVariable Long id, @RequestBody MedicineDto dto) {
         Category category = categoryService.getCategoryById(dto.categoryId());
         Medicine medicine = MedicineMapper.toEntity(dto, category);
-        return MedicineMapper.toDto(medicineService.updateMedicine(id, medicine));
+        MedicineDto updatedMedicineDto = MedicineMapper.toDto(medicineService.updateMedicine(id, medicine));
+        return ResponseEntity.status(HttpStatus.OK).body(updatedMedicineDto);
     }
 
 
@@ -82,7 +88,8 @@ public class MedicineController {
      * @param id The ID of the medicine to delete
      */
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         medicineService.deleteMedicine(id);
+        return ResponseEntity.noContent().build();
     }
 }
