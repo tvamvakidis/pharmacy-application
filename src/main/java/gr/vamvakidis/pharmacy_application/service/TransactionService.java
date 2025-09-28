@@ -2,10 +2,13 @@ package gr.vamvakidis.pharmacy_application.service;
 
 import gr.vamvakidis.pharmacy_application.entity.Medicine;
 import gr.vamvakidis.pharmacy_application.entity.Transaction;
+import gr.vamvakidis.pharmacy_application.entity.TransactionType;
+import gr.vamvakidis.pharmacy_application.exception.NotEnoughStockException;
 import gr.vamvakidis.pharmacy_application.exception.ResourceNotFoundException;
 import gr.vamvakidis.pharmacy_application.repository.TransactionRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -52,6 +55,7 @@ public class TransactionService {
     public Transaction createTransaction(Transaction transaction) {
         Medicine medicine = medicineService.getMedicineById(transaction.getMedicine().getId());
         transaction.setMedicine(medicine);
+        processTransaction(transaction);
         return transactionRepository.save(transaction);
     }
 
@@ -65,5 +69,46 @@ public class TransactionService {
     public void deleteTransaction(Long id) {
         Transaction existingTransaction = getTransactionById(id);
         transactionRepository.delete(existingTransaction);
+    }
+
+
+    /**
+     * Processes the given transaction and updates the stock of the associated medicine accordingly.
+     * <p>
+     * - If the transaction type is IN, the stock of the medicine is increased by the given quantity.
+     * - If the transaction type is OUT, the stock of the medicine is decreased by the given quantity,
+     * unless there is not enough stock available, in which case a NotEnoughStockException is thrown.
+     *
+     * @param transaction The Transaction entity containing the medicine, type, and quantity
+     * @throws NotEnoughStockException if the transaction is OUT and the requested quantity
+     *                                 exceeds the available stock of the medicine
+     */
+    public void processTransaction(Transaction transaction) {
+        Medicine medicine = transaction.getMedicine();
+        TransactionType type = transaction.getType();
+        int quantity = transaction.getQuantity();
+
+        if (type == TransactionType.IN) {
+            medicine.setStock(medicine.getStock() + quantity);
+        } else {
+            if (quantity > medicine.getStock()) {
+                throw new NotEnoughStockException(medicine.getId());
+            } else {
+                medicine.setStock(medicine.getStock() - quantity);
+            }
+        }
+    }
+
+
+    /**
+     * Retrieves all OUT transactions for a specific medicine within a given date range.
+     *
+     * @param medicineId   The ID of the medicine whose transactions are being queried
+     * @param startingDate The start of the date range (inclusive)
+     * @param endingDate   The end of the date range (inclusive)
+     * @return List of Transaction entities of type OUT for the given medicine and date range
+     */
+    public List<Transaction> getTransactionsOut(Long medicineId, LocalDateTime startingDate, LocalDateTime endingDate) {
+        return transactionRepository.getTransactionsOut(medicineId, startingDate, endingDate);
     }
 }
