@@ -32,4 +32,4 @@ spring:
 
   #Spring profile config
   profiles:
-    active: ${ACTIVE_PROFILE:dev}
+    active: ${ACTIVE_PROFILE:prod}
